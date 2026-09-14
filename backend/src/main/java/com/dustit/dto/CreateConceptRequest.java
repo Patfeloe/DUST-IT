@@ -1,30 +1,27 @@
 package com.dustit.dto;
 
-import com.dustit.model.DifficultyLevel;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
-public class CreateAssessmentRequest {
+public class CreateConceptRequest {
 
-    @NotBlank(message = "title is required")
-    private String title;
+    @NotBlank(message = "name is required")
+    private String name;
 
-    @NotNull(message = "difficultyLevel is required")
-    private DifficultyLevel difficultyLevel;
+    private String description;
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public DifficultyLevel getDifficultyLevel() {
-        return difficultyLevel;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
-        this.difficultyLevel = difficultyLevel;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
