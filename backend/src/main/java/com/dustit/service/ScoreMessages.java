@@ -15,9 +15,9 @@ public final class ScoreMessages {
             return "Not yet competent - let's work on this together.";
         } else if (score < 60) {
             return "You're about to dust this topic!";
-        } else if (score < 80) {
+        } else if (score < 75) {
             return "Never been proud 🤭 Look at you being a master!";
-        } else if (score < 95) {
+        } else if (score < 90) {
             return "EISH! Look at you! You're dusting this!";
         } else {
             return "HAIBO! You came to destroy this topic!";
