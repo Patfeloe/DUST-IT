@@ -1,0 +1,39 @@
+{
+  "family": "dust-it-backend",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "dust-it-backend",
+      "image": "<IMAGE_URI>",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "DB_URL", "value": "<YOUR_RDS_JDBC_URL>" },
+        { "name": "AWS_REGION", "value": "af-south-1" },
+        { "name": "AWS_S3_BUCKET", "value": "<YOUR_S3_BUCKET>" },
+        { "name": "AWS_SQS_QUEUE_URL", "value": "<YOUR_SQS_QUEUE_URL>" },
+        { "name": "COGNITO_ISSUER_URI", "value": "<YOUR_COGNITO_ISSUER_URI>" }
+      ],
+      "secrets": [
+        { "name": "DB_USERNAME", "valueFrom": "<SECRETS_MANAGER_ARN_FOR_DB_USERNAME>" },
+        { "name": "DB_PASSWORD", "valueFrom": "<SECRETS_MANAGER_ARN_FOR_DB_PASSWORD>" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/dust-it-backend",
+          "awslogs-region": "af-south-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

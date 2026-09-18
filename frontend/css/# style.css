@@ -1,0 +1,10 @@
+/* DUST-IT styles - placeholder.
+   Filled in properly once real pages (dashboard, topic, assessment) are built. */
+
+body {
+    font-family: system-ui, sans-serif;
+    max-width: 720px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    color: #222;
+}
