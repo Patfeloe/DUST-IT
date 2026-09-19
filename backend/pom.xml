@@ -57,8 +57,10 @@
         </dependency>
 
         <!-- AWS S3 client, for storing learning resources (Section 4.3 /
-             14 of the requirements doc). Uses the AWS SDK's default
-             credential chain - never hardcode AWS keys in this project. -->
+             14 of the requirements doc, and thumbnails for build-order
+             step 5: Resources + object storage). Uses the AWS SDK's
+             default credential chain - never hardcode AWS keys in this
+             project. -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
@@ -81,14 +83,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-        </dependency>
-
-        <!-- AWS S3 client - used for storing resource thumbnails / files
-             (build-order step 5: Resources + object storage) -->
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>2.25.60</version>
         </dependency>
     </dependencies>
 

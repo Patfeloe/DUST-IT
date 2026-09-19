@@ -1,0 +1,153 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  DUST-IT monitoring (build-order step 11) - CloudWatch alarms covering
+  every piece of the architecture, notifying via SNS/email. This is
+  infrastructure-as-code deliberately: alarms defined here are
+  version-controlled and reproducible, not clicked together once in the
+  console and forgotten.
+
+Parameters:
+  NotificationEmail:
+    Type: String
+    Description: Email address to receive alarm notifications
+  SqsQueueName:
+    Type: String
+    Default: dust-it-learning-events
+  LambdaFunctionName:
+    Type: String
+    Default: dust-it-competency-calculator
+  EcsClusterName:
+    Type: String
+    Default: dust-it-cluster
+  EcsServiceName:
+    Type: String
+    Default: dust-it-backend-service
+  RdsInstanceId:
+    Type: String
+    Description: The DB instance identifier of your RDS instance
+
+Resources:
+
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: dust-it-alerts
+
+  AlertSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref AlertTopic
+      Protocol: email
+      Endpoint: !Ref NotificationEmail
+
+  # --- Competency function (step 8) ---
+  # Errors here mean students' competency isn't being recalculated -
+  # silent from a student's perspective, so this needs an active alarm
+  # rather than relying on someone noticing.
+  LambdaErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: dust-it-competency-function-errors
+      AlarmDescription: Competency calculation Lambda is throwing errors
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref LambdaFunctionName
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # --- Learning events queue (step 7) ---
+  # A growing backlog means the competency function can't keep up (or
+  # has stopped entirely) - this catches that even if Lambda itself
+  # isn't erroring, just falling behind.
+  QueueBacklogAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: dust-it-events-queue-backlog
+      AlarmDescription: Learning events are piling up faster than they're being processed
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !Ref SqsQueueName
+      Statistic: Maximum
+      Period: 600
+      EvaluationPeriods: 1
+      Threshold: 50
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # --- Backend (step 10) ---
+  EcsHighCpuAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: dust-it-backend-high-cpu
+      AlarmDescription: Backend service CPU usage is sustained above 80%
+      Namespace: AWS/ECS
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: ClusterName
+          Value: !Ref EcsClusterName
+        - Name: ServiceName
+          Value: !Ref EcsServiceName
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  # --- Database (step 2) ---
+  RdsHighCpuAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: dust-it-db-high-cpu
+      AlarmDescription: RDS CPU usage is sustained above 80%
+      Namespace: AWS/RDS
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: !Ref RdsInstanceId
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+  RdsLowStorageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: dust-it-db-low-storage
+      AlarmDescription: RDS free storage is running low
+      Namespace: AWS/RDS
+      MetricName: FreeStorageSpace
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: !Ref RdsInstanceId
+      Statistic: Minimum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 2000000000  # 2 GB in bytes
+      ComparisonOperator: LessThanThreshold
+      AlarmActions:
+        - !Ref AlertTopic
+      TreatMissingData: notBreaching
+
+Outputs:
+  AlertTopicArn:
+    Description: SNS topic ARN - subscribe additional endpoints (Slack, SMS) here if needed
+    Value: !Ref AlertTopic
