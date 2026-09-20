@@ -87,13 +87,14 @@ public class TopicService {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(
-                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key="
                                 + geminiApiKey))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("GEMINI RAW RESPONSE: " + response.body());
 
         JsonNode root = objectMapper.readTree(response.body());
         String aiText = root.path("candidates").get(0)
