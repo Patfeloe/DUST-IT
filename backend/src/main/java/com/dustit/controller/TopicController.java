@@ -1,6 +1,7 @@
 package com.dustit.controller;
 
 import com.dustit.dto.CreateTopicRequest;
+import com.dustit.dto.GenerateTopicRequest;
 import com.dustit.dto.TopicResponse;
 import com.dustit.model.Topic;
 import com.dustit.service.TopicService;
@@ -46,5 +47,11 @@ public class TopicController {
         return topicService.searchTopics(query).stream()
                 .map(TopicResponse::new)
                 .toList();
+    }
+
+    @PostMapping("/generate")
+    public ResponseEntity<TopicResponse> generateTopic(@Valid @RequestBody GenerateTopicRequest request) throws Exception {
+        Topic generated = topicService.generateTopicWithAI(request.getQuery());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new TopicResponse(generated));
     }
 }

@@ -14,3 +14,8 @@ async function fetchTopics() {
     const response = await fetch(`${API_BASE_URL}/topics`);
     return response.json();
 }
+
+async function searchTopics(query) {
+    const response = await fetch(`${API_BASE_URL}/topics?query=${encodeURIComponent(query)}`);
+    return response.json();
+}
