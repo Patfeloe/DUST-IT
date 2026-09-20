@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+
+
 /**
  * Business logic for topics. Right now this is thin (just delegates to
  * the repository), but this is where things like "don't allow duplicate
@@ -34,5 +36,14 @@ public class TopicService {
     public Topic createTopic(CreateTopicRequest request) {
         Topic topic = new Topic(request.getTitle(), request.getDescription(), request.getSubject());
         return topicRepository.save(topic);
+    }
+
+    public List<Topic> searchTopics(String query) {
+        if (query == null || query.isBlank()) {
+            return getAllTopics();
+        }
+        return topicRepository
+                .findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrSubjectContainingIgnoreCase(
+                        query, query, query);
     }
 }

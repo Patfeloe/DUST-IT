@@ -28,13 +28,6 @@ public class TopicController {
         this.topicService = topicService;
     }
 
-    @GetMapping
-    public List<TopicResponse> getAllTopics() {
-        return topicService.getAllTopics().stream()
-                .map(TopicResponse::new)
-                .toList();
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<TopicResponse> getTopicById(@PathVariable Long id) {
         return topicService.getTopicById(id)
@@ -46,5 +39,12 @@ public class TopicController {
     public ResponseEntity<TopicResponse> createTopic(@Valid @RequestBody CreateTopicRequest request) {
         Topic created = topicService.createTopic(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(new TopicResponse(created));
+    }
+
+    @GetMapping
+    public List<TopicResponse> getAllTopics(@RequestParam(required = false) String query) {
+        return topicService.searchTopics(query).stream()
+                .map(TopicResponse::new)
+                .toList();
     }
 }
