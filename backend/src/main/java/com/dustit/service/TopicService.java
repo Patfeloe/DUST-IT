@@ -69,15 +69,28 @@ public class TopicService {
         }
 
         String prompt = """
-            A student searched for: "%s"
+        A student searched for: "%s"
 
-            Respond with ONLY valid JSON (no markdown, no code fences) in this exact shape:
-            {"title": "...", "subject": "...", "description": "..."}
+        Write a description that actually makes this STICK in someone's head,
+        the way a great tutor with a sense of humor would explain it —
+        not a dictionary entry:
+        - Open with a short, funny or slightly absurd analogy that makes the
+          concept click instantly
+        - Include one small concrete example showing the idea in action —
+          for a coding topic, that means actual code with a funny or
+          memorable value (e.g. print("python") might use a joke about a
+          snake saying its own name), not a generic "hello world"
+        - Write like you're explaining it to a friend who'll laugh and then
+          go "oh wait, that actually makes sense"
+        - Keep it tight - this needs to fit in a few sentences, not a full lesson
 
-            - title: a short, clear topic name
-            - subject: one category word, e.g. Accounting, Programming, Auditing
-            - description: a clear explanation a student could learn from, 3-5 sentences
-            """.formatted(query);
+        Respond with ONLY valid JSON (no markdown, no code fences) in this exact shape:
+        {"title": "...", "subject": "...", "description": "..."}
+
+        - title: a short, clear topic name
+        - subject: one category word, e.g. Accounting, Programming, Auditing
+        - description: 4-6 sentences, following the style above
+        """.formatted(query);
 
         String requestBody = objectMapper.writeValueAsString(Map.of(
                 "contents", List.of(Map.of(

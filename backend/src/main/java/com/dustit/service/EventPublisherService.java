@@ -21,7 +21,7 @@ public class EventPublisherService {
     private final SqsClient sqsClient;
     private final ObjectMapper objectMapper;
 
-    @Value("${aws.sqs.learning-events-queue-url:}")
+    @Value("${aws.sqs.queue-url:}")
     private String queueUrl;
 
     public EventPublisherService(SqsClient sqsClient, ObjectMapper objectMapper) {
