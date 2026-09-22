@@ -298,3 +298,78 @@ button {
 #topics-list li a:hover {
     color: var(--amber-deep);
 }
+
+/* --- Assessment form --- */
+.question {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.question h4 {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: 1.02rem;
+    margin: 0 0 0.75rem;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    cursor: pointer;
+    background: #fffdf8;
+}
+
+.option:has(input:checked) {
+    border-color: var(--amber);
+    background: rgba(232, 162, 61, 0.12);
+}
+
+.option input {
+    margin-top: 0.2rem;
+    accent-color: var(--amber-deep);
+}
+
+#assessment-form > .btn {
+    margin-top: 1.5rem;
+    border: none;
+}
+
+/* --- Assessment result --- */
+.result {
+    padding: 1rem 0 0;
+    text-align: left;
+}
+
+.result .score {
+    font-family: "Fraunces", serif;
+    font-weight: 900;
+    font-size: 3.5rem;
+    color: var(--board);
+    margin: 0;
+}
+
+.result .message {
+    font-size: 1.1rem;
+    margin: 0.25rem 0 1.5rem;
+}
+
+.result-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.result-actions .btn:not(.btn-primary) {
+    border-color: var(--line);
+    color: var(--ink);
+}
+
