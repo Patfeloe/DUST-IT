@@ -24,8 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             resultsEl.innerHTML = "";
             topics.forEach((topic) => {
-                const item = document.createElement("div");
+                const item = document.createElement("a");
                 item.className = "topic-result";
+                item.href = `learn.html?id=${topic.id}`;
 
                 const title = document.createElement("h3");
                 title.textContent = `${topic.title} (${topic.subject})`;

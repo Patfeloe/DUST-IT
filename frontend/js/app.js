@@ -25,7 +25,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             topicsListEl.innerHTML = "";
             topics.forEach((topic) => {
                 const item = document.createElement("li");
-                item.textContent = `[${topic.subject}] ${topic.title}`;
+                const link = document.createElement("a");
+                link.href = `pages/learn.html?id=${topic.id}`;
+                link.textContent = `[${topic.subject}] ${topic.title}`;
+                item.appendChild(link);
                 topicsListEl.appendChild(item);
             });
         }
