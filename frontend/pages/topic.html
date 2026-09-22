@@ -7,15 +7,17 @@
     <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
+<main class="page">
+    <div class="site-header">
+        <p><a href="../index.html">&larr; Back to home</a></p>
+        <h1>Search topics</h1>
+    </div>
 
-<h1>DUST-IT 😉</h1>
-<p><a href="../index.html">← Back to home</a></p>
+    <input id="search-input" type="text" placeholder="Search for a topic..." />
+    <button id="search-button" class="btn btn-primary">Search</button>
 
-<h2>Search Topics</h2>
-<input id="search-input" type="text" placeholder="Search for a topic..." />
-<button id="search-button">Search</button>
-
-<div id="search-results"></div>
+    <div id="search-results"></div>
+</main>
 
 <script src="../js/api.js"></script>
 <script src="../js/search.js"></script>

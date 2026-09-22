@@ -7,18 +7,19 @@
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<!--
-  Placeholder landing page. This gets built out at build-order step 3
-  (JavaScript frontend calling the API). For now it just proves the
-  backend is reachable, once js/app.js is filled in to call
-  GET /api/health.
--->
-<h1>DUST-IT 😉</h1>
-<p>Understand it. Practise it. Dust it.</p>
-<p id="backend-status">Checking backend...</p>
+<main class="page">
+    <div class="site-header">
+        <h1>DUST-IT</h1>
+        <p class="tagline">Understand it. Practise it. Dust it.</p>
+        <p><a href="pages/dashboard.html">Your progress</a></p>
+    </div>
+    <p id="backend-status">Checking backend...</p>
 
-<h2>Topics</h2>
-<ul id="topics-list">Loading...</ul>
+    <section class="section">
+        <h2 class="section-label">Topics</h2>
+        <ul id="topics-list">Loading...</ul>
+    </section>
+</main>
 
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
