@@ -1,96 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.4</version>
-        <relativePath/>
-    </parent>
-
     <groupId>com.dustit</groupId>
-    <artifactId>dust-it-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>dust-it-backend</name>
-    <description>DUST-IT backend - cloud-native learning and competency platform</description>
+    <artifactId>competency-function</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <!--
+        Deliberately its own Maven module, NOT part of the backend's
+        multi-module build - see README.md in this directory. It has no
+        dependency on the Spring Boot app at all, only on the database
+        schema Hibernate already created there.
+    -->
 
     <properties>
-        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-        <!-- Web layer: REST controllers -->
+        <!-- Lambda runtime interfaces -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-core</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <!-- Gives us the SQSEvent type for the handler's input -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
+            <version>3.11.4</version>
         </dependency>
 
-        <!-- Database access via JPA -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-        <!-- PostgreSQL driver (works with local Postgres now, and managed
-             Postgres such as RDS / Azure Database for PostgreSQL later -
-             no code changes needed to switch, only the connection string) -->
+        <!-- Plain JDBC against Postgres - no JPA/Hibernate, see README.md -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
+            <version>42.7.3</version>
         </dependency>
 
-        <!-- Validation for request DTOs -->
+        <!--
+            Jackson for parsing the LearningEvent JSON body. This is just
+            a JSON library, not an ORM, so it doesn't conflict with the
+            "plain JDBC, no JPA" design decision - it keeps the parsing
+            code from being 100 lines of manual string handling.
+        -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <!-- Testing -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- AWS S3 client, for storing learning resources (Section 4.3 /
-             14 of the requirements doc, and thumbnails for build-order
-             step 5: Resources + object storage). Uses the AWS SDK's
-             default credential chain - never hardcode AWS keys in this
-             project. -->
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>2.28.16</version>
-        </dependency>
-
-        <!-- AWS SQS client, for publishing learning events (Section 17) -
-             this is what makes the architecture genuinely event-driven,
-             build-order step 7. -->
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>sqs</artifactId>
-            <version>2.28.16</version>
-        </dependency>
-
-        <!-- Validates JWTs issued by AWS Cognito (build-order step 9) -
-             this is what lets the backend trust a student's identity
-             instead of accepting a self-reported studentId in a request
-             body, which anyone could fake. -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.17.1</version>
         </dependency>
     </dependencies>
 
     <build>
+        <finalName>competency-function</finalName>
         <plugins>
+            <!--
+                Shades all dependencies into one jar, since Lambda needs a
+                single deployable artifact with no external classpath.
+            -->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
